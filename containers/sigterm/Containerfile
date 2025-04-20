@@ -1,0 +1,14 @@
+# Use the Fedora base image
+FROM fedora
+
+# Create the /app directory
+RUN mkdir /app
+
+# Copy the script.sh file to the /app directory inside the container
+COPY sigterm.sh /app/
+
+# Assign execute permissions to the sigterm.sh file
+RUN chmod +x /app/sigterm.sh
+
+# Set the entrypoint to the script.sh file
+ENTRYPOINT ["/app/sigterm.sh"]

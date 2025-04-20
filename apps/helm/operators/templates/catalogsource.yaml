@@ -1,0 +1,13 @@
+{{- range $cat, $catval := $.Values.catalogs }}
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-27"
+  name: {{ $cat }}
+  namespace: {{ $.Values.catalogNamespace }}
+spec:
+  image: {{ $.Values.privateRegistry }}/redhat/{{ $cat }}:{{ $.Values.version }}
+  sourceType: grpc
+{{- end }}

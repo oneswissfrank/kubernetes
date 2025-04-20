@@ -1,0 +1,26 @@
+{{- range $cat, $catval := $.Values.catalogs }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-30"
+    argocd.argoproj.io/hook: PreSync
+  name: oc-mirror-{{ $cat }}
+  namespace: {{ $.Values.namespace }}
+data:
+  imagesetconfiguration.yaml: |
+    kind: ImageSetConfiguration
+    apiVersion: mirror.openshift.io/v1alpha2
+    mirror:
+      operators:
+      - catalog: {{ $.Values.redhatRegistry }}/{{ $catval.catalog }}:{{ $.Values.version }}
+        packages:
+        {{- range $pac, $pacval := $catval.packages }}
+        - name: {{ $pac }}
+          channels:
+          - name: {{ $pacval.channel }}
+            minVersion: {{ $pacval.version }}
+            maxVersion: {{ $pacval.version }}
+        {{- end }}
+{{- end }}

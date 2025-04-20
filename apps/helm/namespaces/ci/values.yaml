@@ -1,0 +1,4 @@
+namespaces:
+  namespace1:
+    labels:
+      environment: production
