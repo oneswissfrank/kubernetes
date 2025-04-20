@@ -3,11 +3,10 @@
   <title>PHP</title>
  </head>
  <body>
- <?php
+  <?php
   set_time_limit(0);
   sleep(5);
-  $hostname = getenv('HOSTNAME');
-  echo $hostname;
   ?>
+  <p>Lorem ipsum dolor sit amet.</p>
  </body>
 </html>
