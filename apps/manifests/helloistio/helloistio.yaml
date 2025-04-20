@@ -1,0 +1,99 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: helloistio
+  labels:
+    app: helloistio
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: helloistio
+  labels:
+    app: helloistio
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - helloistio
+  http:
+  - match:
+    - uri:
+        prefix: /helloistio
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        port:
+          number: 8080
+        host: helloistio
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: helloistio
+  labels:
+    app: helloistio
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helloistio
+  labels:
+    app: helloistio
+data:
+  index.html: "Hello World!"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloistio
+  labels:
+    app: helloistio
+spec:
+  ports:
+  - port: 8080
+    name: http
+  selector:
+    app: helloistio
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloistio
+  labels:
+    app: helloistio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloistio
+  template:
+    metadata:
+      labels:
+        app: helloistio
+      annotations:
+        sidecar.istio.io/inject: 'true'
+    spec:
+      serviceAccountName: helloistio
+      containers:
+        - name: helloistio
+          image: bitnami/apache:latest
+          volumeMounts:
+            - name: helloistio
+              mountPath: /app/
+      volumes:
+        - name: helloistio
+          configMap:
+            name: helloistio
